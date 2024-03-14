@@ -4,7 +4,7 @@ This repository is a new project of the schedule API, with Docker support, and m
 ### Build
 Build the image with the following commands:
 ```bash
-    git clone [repo link]
+    git clone https://github.com/mindenit/api.git
     cd api
     docker build -t mindenit-schedule-api .
 ```

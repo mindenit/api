@@ -1,4 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+RUN     apt-get  update -y \
+&& apt-get upgrade -y \
+&& apt-get install iputils-ping -y \
+&& apt-get install net-tools -y 
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080

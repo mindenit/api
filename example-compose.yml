@@ -1,0 +1,41 @@
+networks:
+  dev:
+    driver: bridge
+
+services:
+  api:
+    image: api
+    restart: always
+    environment:
+      - ASPNETCORE_HTTP_PORTS=5035
+    ports:
+      - 4173:5035
+    depends_on:
+      - db
+    networks:
+      - dev
+ 
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: api
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 5432:5432
+    networks:
+      - dev
+ 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 5000:8080
+    networks:
+      - dev

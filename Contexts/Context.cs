@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Nure.NET.Types;
 
-namespace nure_api;
+namespace Api.Contexts;
 
 public class Context : IdentityDbContext<AuthUser>
 {
@@ -13,8 +13,10 @@ public class Context : IdentityDbContext<AuthUser>
     public Context() => Database.EnsureCreated();
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        
         optionsBuilder.UseNpgsql(
-            "Host=db; Database=api; Username=postgres; Password=fastgame; Port=5432; Pooling=true;");
+            $"Host={Environment.GetEnvironmentVariable("DB_HOST")};" +
+            "Database=api; Username=postgres; Password=fastgame; Port=5432; Pooling=true;");
     }
 
     public Context(DbContextOptions<Context> options) : base(options) { }

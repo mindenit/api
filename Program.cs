@@ -2,9 +2,10 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using nure_api;
+using Api.Contexts;
 using Nure.NET;
 using Serilog;
+using Api.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,35 +47,37 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-/*builder.Services.AddDbContext<Context>(options =>
-    options.UseNpgsql(File.ReadAllText("dbConnection")));*/
-
-
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
-app.MapGet("/lists/groups", async (HttpContext x) => {
-    using (var context = new Context())
-    {
-        context.Groups.AddRange(Cist.GetGroups());
-        context.SaveChanges();
-    }
-    var json = JsonSerializer.Serialize(Cist.GetGroups(), new JsonSerializerOptions { WriteIndented = true });
-    return Results.Content(json, "application/json");
-});
 
-app.MapGet("/lists/teachers", async (HttpContext x) => {
-    var json = JsonSerializer.Serialize(Cist.GetTeachers(), new JsonSerializerOptions { WriteIndented = true });
-    return Results.Content(json, "application/json");
-});
+GroupsHandler.Update();
+TeachersHandler.Update();
+AuditoriesHandler.Update();
+// Task.Run(() =>
+// {
+//     while (true)
+//     {
+//         using (var context = new Context())
+//         {
+//             if (!context.Groups.Any() && !context.Teachers.Any() && !context.Auditories.Any())
+//             {
+//                 GroupsHandler.Update();
+//                 TeachersHandler.Update();
+//                 AuditoriesHandler.Update();
+//             }
+//         }
+//     }
+// });
 
-app.MapGet("/lists/auditories", async (HttpContext x) => {
-    var json = JsonSerializer.Serialize(Cist.GetAuditories(), new JsonSerializerOptions { WriteIndented = true });
-    return Results.Content(json, "application/json");
-});
+app.MapGet("/lists/groups", async (HttpContext x) => { return Results.Content(GroupsHandler.GetJson(), "application/json"); });
+
+app.MapGet("/lists/teachers", async (HttpContext x) => { return Results.Content(TeachersHandler.GetJson(), "application/json"); });
+
+app.MapGet("/lists/auditories", async (HttpContext x) => { return Results.Content(AuditoriesHandler.GetJson(), "application/json"); });
 
 app.UseCors("CORS");
 

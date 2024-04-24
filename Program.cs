@@ -54,24 +54,29 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 
-GroupsHandler.Update();
-TeachersHandler.Update();
-AuditoriesHandler.Update();
-// Task.Run(() =>
-// {
-//     while (true)
-//     {
-//         using (var context = new Context())
-//         {
-//             if (!context.Groups.Any() && !context.Teachers.Any() && !context.Auditories.Any())
-//             {
-//                 GroupsHandler.Update();
-//                 TeachersHandler.Update();
-//                 AuditoriesHandler.Update();
-//             }
-//         }
-//     }
-// });
+Task.Run(() =>
+{
+    while (true)
+    {
+        using (var context = new Context())
+        {
+            if (!context.Groups.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
+            {
+                GroupsHandler.Update();
+            }
+
+            if (!context.Teachers.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
+            {
+                TeachersHandler.Update();
+            }
+
+            if (!context.Auditories.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
+            {
+                AuditoriesHandler.Update();
+            }
+        }
+    }
+});
 
 app.MapGet("/lists/groups", async (HttpContext x) => { return Results.Content(GroupsHandler.GetJson(), "application/json"); });
 

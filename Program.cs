@@ -84,6 +84,21 @@ app.MapGet("/lists/teachers", async (HttpContext x) => { return Results.Content(
 
 app.MapGet("/lists/auditories", async (HttpContext x) => { return Results.Content(AuditoriesHandler.GetJson(), "application/json"); });
 
+app.MapGet("schedule/group/{group}?startTime={start}&endTime={end}", async (HttpContext x, string group, string start, string end) =>
+{
+    
+});
+
+app.MapGet("schedule/teacher/{teacher}?startTime={start}&endTime={end}", async (HttpContext x, string group, string start, string end) =>
+{
+    
+});
+
+app.MapGet("schedule/auditory/{auditory}?startTime={start}&endTime={end}", async (HttpContext x, string group, string start, string end) =>
+{
+    
+});
+
 app.UseCors("CORS");
 
 app.UseSwagger(options =>

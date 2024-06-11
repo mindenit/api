@@ -6,13 +6,13 @@ Build the image with the following commands:
 ```bash
     git clone https://github.com/mindenit/api.git
     cd api
-    docker build -t mindenit-schedule-api .
+    docker build -t api .
 ```
 
 ### Run
-Run builded image for access the API:
+Run compose for access the API:
 ```bash
-    docker run -d -p 3000:8080 --name API mindenit-schedule-api
+    docker compose up
 ```
 
-And now you can access the API on `http://localhost:3000/`
+And now you can access the API on `http://localhost:4173/`

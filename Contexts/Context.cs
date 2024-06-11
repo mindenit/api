@@ -7,17 +7,21 @@ namespace Api.Contexts;
 
 public class Context : IdentityDbContext<AuthUser>
 {
-    public DbSet<Group> Groups { get; set; }
-    public DbSet<Teacher> Teachers { get; set; }
-    public DbSet<Auditory> Auditories { get; set; }
+    public DbSet<ScheduleGroup> Groups { get; set; }
+    public DbSet<ScheduleTeacher> Teachers { get; set; }
+    public DbSet<ScheduleAuditory> Auditories { get; set; }
     public Context() => Database.EnsureCreated();
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         
         optionsBuilder.UseNpgsql(
-            $"Host={Environment.GetEnvironmentVariable("DB_HOST")};" +
-            "Database=api; Username=postgres; Password=fastgame; Port=5432; Pooling=true;");
+            $"Host=db;" +
+            $"Database=api;" +
+            $"Username=postgres;" +
+            $"Password=password;" +
+            $"Port=5432;");
+        
     }
-
+    
     public Context(DbContextOptions<Context> options) : base(options) { }
 }

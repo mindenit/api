@@ -1,11 +1,8 @@
-using System.Reflection;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Api.Contexts;
-using Nure.NET;
 using Serilog;
 using Api.Handlers;
+using Api.Processors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,29 +51,25 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 
-Task.Run(() =>
+using (var context = new Context())
 {
-    while (true)
+    Log.Information($"Count of groups: {context.Groups.Count()}");
+    if (!context.Groups.Any())
     {
-        using (var context = new Context())
-        {
-            if (!context.Groups.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
-            {
-                GroupsHandler.Update();
-            }
-
-            if (!context.Teachers.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
-            {
-                TeachersHandler.Update();
-            }
-
-            if (!context.Auditories.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
-            {
-                AuditoriesHandler.Update();
-            }
-        }
+        GroupsHandler.Update();
     }
-});
+
+    if (!context.Teachers.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
+    {
+        TeachersHandler.Update();
+    }
+
+    if (!context.Auditories.Any() || DateTime.Now.Hour == 6 && DateTime.Now.Minute == 0 && DateTime.Now.Second == 0)
+    {
+        AuditoriesHandler.Update();
+    }
+}
+
 
 app.MapGet("/lists/groups", async (HttpContext x) => { return Results.Content(GroupsHandler.GetJson(), "application/json"); });
 
@@ -84,19 +77,22 @@ app.MapGet("/lists/teachers", async (HttpContext x) => { return Results.Content(
 
 app.MapGet("/lists/auditories", async (HttpContext x) => { return Results.Content(AuditoriesHandler.GetJson(), "application/json"); });
 
-app.MapGet("schedule/group/{group}?startTime={start}&endTime={end}", async (HttpContext x, string group, string start, string end) =>
+app.MapGet("schedule/groups/{group}", async (HttpContext x, string group) =>
 {
-    
+    var group_id = long.Parse(group);
+    var start = x.Request.Query.ContainsKey("start") ? long.Parse(x.Request.Query["start"]) : 0;
+    var end = x.Request.Query.ContainsKey("end") ? long.Parse(x.Request.Query["end"]) : 0;
+    return Results.Content(GroupProcessor.GetJson(group_id, start, end), "application/json");
 });
 
-app.MapGet("schedule/teacher/{teacher}?startTime={start}&endTime={end}", async (HttpContext x, string group, string start, string end) =>
+app.MapGet("schedule/teachers/{teacher}", async (HttpContext x, string teacher) =>
 {
-    
+
 });
 
-app.MapGet("schedule/auditory/{auditory}?startTime={start}&endTime={end}", async (HttpContext x, string group, string start, string end) =>
+app.MapGet("schedule/auditories/{auditory}", async (HttpContext x, string auditory) =>
 {
-    
+
 });
 
 app.UseCors("CORS");

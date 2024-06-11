@@ -8,6 +8,11 @@ services:
     restart: always
     environment:
       - ASPNETCORE_HTTP_PORTS=5035
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=password
+      - DB_NAME=api
     ports:
       - 4173:5035
     depends_on:

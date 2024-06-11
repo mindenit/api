@@ -1,3 +1,4 @@
+using Api.Classes;
 using Api.Contexts;
 using Nure.NET;
 using Nure.NET.Types;
@@ -12,9 +13,9 @@ namespace Api.Handlers
             return JsonSerializer.Serialize(Get(), new JsonSerializerOptions { WriteIndented = true });
         }
 
-        public static List<Teacher> Get()
+        public static List<ScheduleTeacher> Get()
         {
-            List<Teacher> teachers = new List<Teacher>();
+            List<ScheduleTeacher> teachers = new List<ScheduleTeacher>();
 
             using (var context = new Context())
             {
@@ -28,7 +29,10 @@ namespace Api.Handlers
         {
             using (var context = new Context())
             {
-                context.Teachers.AddRange(Cist.GetTeachers());
+                var teachers = Cist.GetTeachers();
+                List<ScheduleTeacher> scheduleTeachers = new List<ScheduleTeacher>();
+                scheduleTeachers = teachers.Select(x => new ScheduleTeacher { Id = x.Id, FullName = x.FullName, ShortName = x.ShortName }).ToList();
+                context.Teachers.AddRange(scheduleTeachers);
                 context.SaveChanges();
             }
         }

@@ -7,23 +7,23 @@ using System.Text.Json;
 
 namespace Api.Processors
 {
-    class GroupProcessor
+    class TeacherProcessor
     {
         public static string GetJson(long id, long start = 0, long end = 0)
         {
-            return JsonSerializer.Serialize(Get(EventType.Group, id, start, end), new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(Get(EventType.Teacher, id, start, end), new JsonSerializerOptions { WriteIndented = true });
         }
 
         public static List<Event> Get(EventType type, long id, long start = 0, long end = 0)
         {
             using (var context = new Context())
             {
-                var group = context.Groups.Find(id);
-                if (group != null)
+                var teacher = context.Teachers.Find(id);
+                if (teacher != null)
                 {
-                    if (group.Events != "")
+                    if (teacher.Events != "")
                     {
-                        var events = JsonSerializer.Deserialize<List<Event>>(group.Events);
+                        var events = JsonSerializer.Deserialize<List<Event>>(teacher.Events);
                         if (start == 0 && end == 0)
                             return events;
                         else
@@ -37,7 +37,7 @@ namespace Api.Processors
                     {
                         List<Event> events = new List<Event>();
                         events = Cist.GetEvents(type, id, start, end);
-                        group.Events = JsonSerializer.Serialize(events);
+                        teacher.Events = JsonSerializer.Serialize(events);
                         context.SaveChanges();
                         if (start == 0 && end == 0)
                             return events;
@@ -59,17 +59,15 @@ namespace Api.Processors
             {
                 try
                 {
-                    foreach (var group in context.Groups)
+                    foreach (var teacher in context.Teachers)
                     {
-                        List<Event> events = new List<Event>();
-                        events = Cist.GetEvents(EventType.Group, group.Id);
-                        group.Events = JsonSerializer.Serialize(events);
+                        teacher.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Teacher, teacher.Id));
                         Thread.Sleep(100);
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Error while updating groups");
+                    Log.Error("Error while updating teachers");
                 }
                 context.SaveChanges();
             }

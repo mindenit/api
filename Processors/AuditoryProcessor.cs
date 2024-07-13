@@ -7,23 +7,23 @@ using System.Text.Json;
 
 namespace Api.Processors
 {
-    class GroupProcessor
+    class AuditoryProcessor
     {
         public static string GetJson(long id, long start = 0, long end = 0)
         {
-            return JsonSerializer.Serialize(Get(EventType.Group, id, start, end), new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(Get(EventType.Auditory, id, start, end), new JsonSerializerOptions { WriteIndented = true });
         }
 
         public static List<Event> Get(EventType type, long id, long start = 0, long end = 0)
         {
             using (var context = new Context())
             {
-                var group = context.Groups.Find(id);
-                if (group != null)
+                var auditory = context.Auditories.Find(id);
+                if (auditory != null)
                 {
-                    if (group.Events != "")
+                    if (auditory.Events != "")
                     {
-                        var events = JsonSerializer.Deserialize<List<Event>>(group.Events);
+                        var events = JsonSerializer.Deserialize<List<Event>>(auditory.Events);
                         if (start == 0 && end == 0)
                             return events;
                         else
@@ -37,7 +37,7 @@ namespace Api.Processors
                     {
                         List<Event> events = new List<Event>();
                         events = Cist.GetEvents(type, id, start, end);
-                        group.Events = JsonSerializer.Serialize(events);
+                        auditory.Events = JsonSerializer.Serialize(events);
                         context.SaveChanges();
                         if (start == 0 && end == 0)
                             return events;
@@ -50,7 +50,7 @@ namespace Api.Processors
                     }
                 }
             }
-            return new List<Event>();            
+            return new List<Event>();
         }
 
         public static void Update()
@@ -59,17 +59,15 @@ namespace Api.Processors
             {
                 try
                 {
-                    foreach (var group in context.Groups)
+                    foreach (var auditory in context.Auditories)
                     {
-                        List<Event> events = new List<Event>();
-                        events = Cist.GetEvents(EventType.Group, group.Id);
-                        group.Events = JsonSerializer.Serialize(events);
+                        auditory.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Auditory, auditory.Id));
                         Thread.Sleep(100);
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Error while updating groups");
+                    Log.Error(e, "Error updating auditories");
                 }
                 context.SaveChanges();
             }

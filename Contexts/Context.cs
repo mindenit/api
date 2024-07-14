@@ -19,7 +19,7 @@ public class Context : IdentityDbContext<AuthUser>
             $"Database=api;" +
             $"Username=postgres;" +
             $"Password=password;" +
-            $"Port=5433;");
+            $"Port=5432;");
         
     }
     

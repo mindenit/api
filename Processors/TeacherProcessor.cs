@@ -11,7 +11,10 @@ namespace Api.Processors
     {
         public static string GetJson(long id, long start = 0, long end = 0)
         {
-            return JsonSerializer.Serialize(Get(EventType.Teacher, id, start, end), new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(Get(EventType.Teacher, id, start, end), new JsonSerializerOptions { 
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
         }
 
         public static List<Event> Get(EventType type, long id, long start = 0, long end = 0)

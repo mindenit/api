@@ -10,7 +10,10 @@ namespace Api.Handlers
     {
         public static string GetJson()
         {
-            return JsonSerializer.Serialize(Get(), new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(Get(), new JsonSerializerOptions { 
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+           });
         }
 
         public static List<ScheduleTeacher> Get()

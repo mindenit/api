@@ -1,27 +1,10 @@
 networks:
   dev:
     driver: bridge
-
 services:
-  api:
-    image: api
-    restart: always
-    environment:
-      - ASPNETCORE_HTTP_PORTS=5035
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASS=password
-      - DB_NAME=api
-    ports:
-      - 4173:5035
-    depends_on:
-      - db
-    networks:
-      - dev
- 
+
   db:
-    image: postgres
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -32,19 +15,17 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
-    ports:
-      - 5432:5432
     networks:
       - dev
- 
-  pgadmin:
-    image: dpage/pgadmin4
+
+  api:
+    image: api
     restart: always
     environment:
-      PGADMIN_LISTEN_PORT: 8080
-      PGADMIN_DEFAULT_EMAIL: example@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: example
+      - ASPNETCORE_HTTP_PORTS=5035
     ports:
-      - 5000:8080
+      - 4173:5035
+    depends_on:
+      - db
     networks:
       - dev

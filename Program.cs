@@ -50,6 +50,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+GroupsHandler.Update();
+TeachersHandler.Update();
+AuditoriesHandler.Update();
+
 var app = builder.Build();
 
 app.UseSwagger();

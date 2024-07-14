@@ -50,9 +50,24 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-GroupsHandler.Update();
-TeachersHandler.Update();
-AuditoriesHandler.Update();
+using (var context = new Context())
+{
+    if(!context.Groups.Any())
+    {
+        Log.Information("No groups found, updating...");
+        GroupsHandler.Update();
+    }
+    if (!context.Teachers.Any())
+    {
+        Log.Information("No teachers found, updating...");
+        TeachersHandler.Update();
+    }
+    if (!context.Auditories.Any())
+    {
+        Log.Information("No auditories found, updating...");
+        AuditoriesHandler.Update();
+    }
+}
 
 var app = builder.Build();
 

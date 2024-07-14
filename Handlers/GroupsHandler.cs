@@ -39,5 +39,14 @@ namespace Api.Handlers
                 context.SaveChanges();
             }
         }
+
+        public static void Clear()
+        {
+            using (var context = new Context())
+            {
+                context.Groups.RemoveRange(context.Groups);
+                context.SaveChanges();
+            }
+        }
     }
 }

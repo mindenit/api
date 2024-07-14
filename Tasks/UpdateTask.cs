@@ -12,6 +12,10 @@ namespace Api.Tasks
         {
             Log.Information("Start updating information...");
 
+            GroupsHandler.Clear();
+            TeachersHandler.Clear();
+            AuditoriesHandler.Clear();
+
             GroupsHandler.Update();
             TeachersHandler.Update();
             AuditoriesHandler.Update();

@@ -94,9 +94,9 @@ app.MapGet("/lists/auditories", async (HttpContext x) => { return Results.Conten
 })
 .Produces<IList<Auditory>>();
 
-app.MapGet("schedule/groups/{group}", async (HttpContext x, string group) =>
+app.MapGet("schedule/groups/{id}", async (HttpContext x, long id) =>
 {
-    var group_id = long.Parse(group);
+    var group_id = id;
     var start = x.Request.Query.ContainsKey("start") ? long.Parse(x.Request.Query["start"]) : 0;
     var end = x.Request.Query.ContainsKey("end") ? long.Parse(x.Request.Query["end"]) : 0;
 
@@ -111,13 +111,35 @@ app.MapGet("schedule/groups/{group}", async (HttpContext x, string group) =>
 {
     generatedOperation.Description = "Get group schedule";
     generatedOperation.Summary = "Get group schedule";
+    generatedOperation.Parameters.Add(new OpenApiParameter
+    {
+        Name = "start",
+        In = ParameterLocation.Query,
+        Required = false,
+        Description = "Start time, in unix timestamp",
+        Schema = new OpenApiSchema
+        {
+            Type = "integer"
+        }
+    });
+    generatedOperation.Parameters.Add(new OpenApiParameter
+    {
+        Name = "end",
+        In = ParameterLocation.Query,
+        Required = false,
+        Description = "End time, in unix timestamp",
+        Schema = new OpenApiSchema
+        {
+            Type = "integer"
+        }
+    });
     return generatedOperation;
 })
 .Produces<IList<Event>>();
 
-app.MapGet("schedule/teachers/{teacher}", async (HttpContext x, string teacher) =>
+app.MapGet("schedule/teachers/{id}", async (HttpContext x, long id) =>
 {
-    var group_id = long.Parse(teacher);
+    var teacher_id = id;
     var start = x.Request.Query.ContainsKey("start") ? long.Parse(x.Request.Query["start"]) : 0;
     var end = x.Request.Query.ContainsKey("end") ? long.Parse(x.Request.Query["end"]) : 0;
 
@@ -126,19 +148,41 @@ app.MapGet("schedule/teachers/{teacher}", async (HttpContext x, string teacher) 
     if (end < 0)
         end = 0;
 
-    return Results.Content(TeacherProcessor.GetJson(group_id, start, end), "application/json");
+    return Results.Content(TeacherProcessor.GetJson(teacher_id, start, end), "application/json");
 })
 .WithOpenApi(generatedOperation =>
 {
     generatedOperation.Description = "Get teacher schedule";
     generatedOperation.Summary = "Get teacher schedule";
+    generatedOperation.Parameters.Add(new OpenApiParameter
+    {
+        Name = "start",
+        In = ParameterLocation.Query,
+        Required = false,
+        Description = "Start time, in unix timestamp",
+        Schema = new OpenApiSchema
+        {
+            Type = "integer"
+        }
+    });
+    generatedOperation.Parameters.Add(new OpenApiParameter
+    {
+        Name = "end",
+        In = ParameterLocation.Query,
+        Required = false,
+        Description = "End time, in unix timestamp",
+        Schema = new OpenApiSchema
+        {
+            Type = "integer"
+        }
+    });
     return generatedOperation;
 })
 .Produces<IList<Event>>();
 
-app.MapGet("schedule/auditories/{auditory}", async (HttpContext x, string auditory) =>
+app.MapGet("schedule/auditories/{id}", async (HttpContext x, long id) =>
 {
-    var group_id = long.Parse(auditory);
+    var auditory_id = id;
     var start = x.Request.Query.ContainsKey("start") ? long.Parse(x.Request.Query["start"]) : 0;
     var end = x.Request.Query.ContainsKey("end") ? long.Parse(x.Request.Query["end"]) : 0;
 
@@ -147,12 +191,34 @@ app.MapGet("schedule/auditories/{auditory}", async (HttpContext x, string audito
     if (end < 0)
         end = 0;
 
-    return Results.Content(AuditoryProcessor.GetJson(group_id, start, end), "application/json");
+    return Results.Content(AuditoryProcessor.GetJson(auditory_id, start, end), "application/json");
 })
 .WithOpenApi(generatedOperation =>
 {
     generatedOperation.Description = "Get auditory schedule";
     generatedOperation.Summary = "Get auditory schedule";
+    generatedOperation.Parameters.Add(new OpenApiParameter
+    {
+        Name = "start",
+        In = ParameterLocation.Query,
+        Required = false,
+        Description = "Start time, in unix timestamp",
+        Schema = new OpenApiSchema
+        {
+            Type = "integer"
+        }
+    });
+    generatedOperation.Parameters.Add(new OpenApiParameter
+    {
+        Name = "end",
+        In = ParameterLocation.Query,
+        Required = false,
+        Description = "End time, in unix timestamp",
+        Schema = new OpenApiSchema
+        {
+            Type = "integer"
+        }
+    });
     return generatedOperation;
 })
 .Produces<IList<Event>>();

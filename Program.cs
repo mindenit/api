@@ -10,10 +10,10 @@ using Nure.NET.Types;
 using Discord.Webhook;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var allowAny = "_any";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: CORS,
+    options.AddPolicy(name: allowAny,
         policy =>
         {
             policy.AllowAnyOrigin()
@@ -285,7 +285,7 @@ app.MapGet("schedule/auditories/{id}", async (HttpContext x, long id) =>
 })
 .Produces<IList<Event>>();
 
-app.UseCors("CORS");
+app.UseCors(allowAny);
 
 app.UseSwagger(options =>
 {

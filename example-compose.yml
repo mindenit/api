@@ -23,6 +23,7 @@ services:
     restart: always
     environment:
       - ASPNETCORE_HTTP_PORTS=5035
+      - DISCORD_WEBHOOK_URL=your_url
     ports:
       - 4173:5035
     depends_on:

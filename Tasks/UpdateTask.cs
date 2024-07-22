@@ -3,6 +3,7 @@ using Api.Handlers;
 using Api.Processors;
 using Coravel.Invocable;
 using Serilog;
+using Discord.Webhook;
 
 namespace Api.Tasks
 {
@@ -10,11 +11,20 @@ namespace Api.Tasks
     {
         public async Task Invoke()
         {
+            
+            // send log message with discord webhook by Discord.NET
+             
+            try
+            {
+                var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                await client.SendMessageAsync("Start updating information...");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error while sending message to discord");
+            }
+            
             Log.Information("Start updating information...");
-
-            GroupsHandler.Clear();
-            TeachersHandler.Clear();
-            AuditoriesHandler.Clear();
 
             GroupsHandler.Update();
             TeachersHandler.Update();
@@ -25,6 +35,16 @@ namespace Api.Tasks
             TeacherProcessor.Update();
 
             Log.Information("Information updated!");
+            
+            try
+            {
+                var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                await client.SendMessageAsync("Information updated!");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error while sending message to discord");
+            }
 
         }
     }

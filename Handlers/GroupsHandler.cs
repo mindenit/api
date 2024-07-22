@@ -29,6 +29,14 @@ namespace Api.Handlers
 
             return groups;
         }
+        
+        public static bool IsExist(long id)
+        {
+            using (var context = new Context())
+            {
+                return context.Groups.Any(t => t.Id == id);
+            }
+        }
 
         public static void Update()
         {
@@ -37,9 +45,18 @@ namespace Api.Handlers
                 var groups = Cist.GetGroups();
                 List<ScheduleGroup> scheduleGroups = new List<ScheduleGroup>();
                 scheduleGroups = ScheduleGroup.Convert(groups);
-                Log.Information($"Count of groups: {scheduleGroups.Count}");
-                context.Groups.AddRange(scheduleGroups);
-                context.SaveChanges();
+                
+                if(context.Groups.ToList().Count != scheduleGroups.Count)
+                {
+                    foreach (var group in scheduleGroups)
+                    {
+                        if (!context.Groups.Any(t => t.Id == group.Id))
+                        {
+                            context.Groups.Add(group);
+                        }
+                    }
+                    context.SaveChanges();
+                }
             }
         }
 

@@ -27,6 +27,14 @@ namespace Api.Handlers
 
             return teachers;
         }
+        
+        public static bool IsExist(long id)
+        {
+            using (var context = new Context())
+            {
+                return context.Teachers.Any(t => t.Id == id);
+            }
+        }
 
         public static void Update()
         {
@@ -34,12 +42,22 @@ namespace Api.Handlers
             {
                 var teachers = Cist.GetTeachers();
                 List<ScheduleTeacher> scheduleTeachers = new List<ScheduleTeacher>();
-                scheduleTeachers = teachers.Select(x => new ScheduleTeacher { Id = x.Id, FullName = x.FullName, ShortName = x.ShortName }).ToList();
-                context.Teachers.AddRange(scheduleTeachers);
-                context.SaveChanges();
+                scheduleTeachers = ScheduleTeacher.Convert(teachers);
+                
+                if(context.Teachers.ToList().Count != scheduleTeachers.Count)
+                {
+                    foreach (var teacher in scheduleTeachers)
+                    {
+                        if (!context.Teachers.Any(t => t.Id == teacher.Id))
+                        {
+                            context.Teachers.Add(teacher);
+                        }
+                    }
+                    context.SaveChanges();
+                }
             }
         }
-
+        
         public static void Clear()
         {
             using (var context = new Context())

@@ -27,16 +27,34 @@ namespace Api.Handlers
 
             return auditories;
         }
+        
+        public static bool IsExist(long id)
+        {
+            using (var context = new Context())
+            {
+                return context.Auditories.Any(t => t.Id == id);
+            }
+        }
 
         public static void Update()
         {
             using (var context = new Context())
             {
                 var auditories = Cist.GetAuditories();
-                List<ScheduleAuditory>  scheduleAuditories = new List<ScheduleAuditory>();
-                scheduleAuditories = auditories.Select(x => new ScheduleAuditory { Id = x.Id, Name = x.Name }).ToList();
-                context.Auditories.AddRange(scheduleAuditories);
-                context.SaveChanges();
+                List<ScheduleAuditory> scheduleAuditories = new List<ScheduleAuditory>();
+                scheduleAuditories = ScheduleAuditory.Convert(auditories);
+                
+                if(context.Auditories.ToList().Count != scheduleAuditories.Count)
+                {
+                    foreach (var auditory in scheduleAuditories)
+                    {
+                        if (!context.Auditories.Any(t => t.Id == auditory.Id))
+                        {
+                            context.Auditories.Add(auditory);
+                        }
+                    }
+                    context.SaveChanges();
+                }
             }
         }
 

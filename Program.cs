@@ -7,6 +7,7 @@ using Api.Handlers;
 using Api.Processors;
 using Api.Tasks;
 using Nure.NET.Types;
+using Discord.Webhook;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,16 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 Log.Information("Application started!");
+
+try
+{
+    var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+    await client.SendMessageAsync("Application started!");
+}
+catch (Exception e)
+{
+    Log.Error(e, "Error while sending message to discord");
+}
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -119,8 +130,20 @@ app.MapGet("schedule/groups/{id}", async (HttpContext x, long id) =>
         start = 0;
     if (end < 0)
         end = 0;
-
-    return Results.Content(GroupProcessor.GetJson(group_id, start, end), "application/json");
+        
+    if(start > end)
+    {
+        return Results.BadRequest("Start time must be less than end time");
+    }
+    
+    if(GroupsHandler.IsExist(group_id))
+    {
+        return Results.Content(GroupProcessor.GetJson(group_id, start, end), "application/json");    
+    }
+    else
+    {
+        return Results.NotFound($"Group with id {group_id} not found");
+    }
 })
 .WithOpenApi(generatedOperation =>
 {
@@ -162,8 +185,20 @@ app.MapGet("schedule/teachers/{id}", async (HttpContext x, long id) =>
         start = 0;
     if (end < 0)
         end = 0;
+        
+    if(start > end)
+    {
+        return Results.BadRequest("Start time must be less than end time");
+    }
 
-    return Results.Content(TeacherProcessor.GetJson(teacher_id, start, end), "application/json");
+    if (TeachersHandler.IsExist(teacher_id))
+    {
+        return Results.Content(TeacherProcessor.GetJson(teacher_id, start, end), "application/json");
+    }
+    else
+    {
+        return Results.NotFound($"Teacher with id {teacher_id} not found");
+    }
 })
 .WithOpenApi(generatedOperation =>
 {
@@ -205,8 +240,20 @@ app.MapGet("schedule/auditories/{id}", async (HttpContext x, long id) =>
         start = 0;
     if (end < 0)
         end = 0;
+        
+    if(start > end)
+    {
+        return Results.BadRequest("Start time must be less than end time");
+    }
 
-    return Results.Content(AuditoryProcessor.GetJson(auditory_id, start, end), "application/json");
+    if (AuditoriesHandler.IsExist(auditory_id))
+    {
+        return Results.Content(AuditoryProcessor.GetJson(auditory_id, start, end), "application/json");
+    }
+    else
+    {
+        return Results.NotFound($"Auditory with id {auditory_id} not found");
+    }
 })
 .WithOpenApi(generatedOperation =>
 {

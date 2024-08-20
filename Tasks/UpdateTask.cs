@@ -26,13 +26,22 @@ namespace Api.Tasks
             
             Log.Information("Start updating information...");
 
-            GroupsHandler.Update();
-            TeachersHandler.Update();
-            AuditoriesHandler.Update();
+            try
+            {
+                GroupsHandler.Update();
+                TeachersHandler.Update();
+                AuditoriesHandler.Update();
 
-            AuditoryProcessor.Update();
-            GroupProcessor.Update();
-            TeacherProcessor.Update();
+                AuditoryProcessor.Update();
+                GroupProcessor.Update();
+                TeacherProcessor.Update();
+            }
+            catch (Exception e)
+            {
+                var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                await client.SendMessageAsync("Error while updating information: >" + e.Message);
+                Log.Error(e, "Error while updating information");
+            }
 
             Log.Information("Information updated!");
             

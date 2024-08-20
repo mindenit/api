@@ -90,7 +90,8 @@ var provider = app.Services;
 provider.UseScheduler(scheduler =>
 {
     scheduler.Schedule<UpdateTask>()
-    .DailyAtHour(0);
+    .DailyAtHour(0)
+    .PreventOverlapping("UpdateTask");
 }); 
 
 app.MapGet("/lists/groups", async (HttpContext x) => { return Results.Content(GroupsHandler.GetJson(), "application/json"); })

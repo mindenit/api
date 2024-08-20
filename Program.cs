@@ -90,7 +90,7 @@ var provider = app.Services;
 provider.UseScheduler(scheduler =>
 {
     scheduler.Schedule<UpdateTask>()
-    .EverySeconds(25000)
+    .Cron("0 */7 * * *")
     .PreventOverlapping("UpdateTask");
 }); 
 

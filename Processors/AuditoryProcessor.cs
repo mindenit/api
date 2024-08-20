@@ -65,7 +65,7 @@ namespace Api.Processors
                     foreach (var auditory in context.Auditories)
                     {
                         auditory.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Auditory, auditory.Id));
-                        Thread.Sleep(100);
+                        Thread.Sleep(500);
                     }
                 }
                 catch (Exception e)

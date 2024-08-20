@@ -90,7 +90,7 @@ var provider = app.Services;
 provider.UseScheduler(scheduler =>
 {
     scheduler.Schedule<UpdateTask>()
-    .DailyAtHour(0)
+    .EverySeconds(25000)
     .PreventOverlapping("UpdateTask");
 }); 
 
@@ -285,6 +285,19 @@ app.MapGet("schedule/auditories/{id}", async (HttpContext x, long id) =>
     return generatedOperation;
 })
 .Produces<IList<Event>>();
+
+// hidden endpoint from swagger for updating task
+app.MapPost("/update", async (HttpContext x) =>
+{
+    var task = provider.GetRequiredService<UpdateTask>();
+
+    var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+    await client.SendMessageAsync("Forced updating information...");
+
+    task.Invoke();
+    return Results.Ok();
+});
+
 
 app.UseCors(allowAny);
 

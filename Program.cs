@@ -289,7 +289,7 @@ app.MapGet("schedule/auditories/{id}", async (HttpContext x, long id) =>
 .Produces<IList<Event>>();
 
 // hidden endpoint from swagger for updating task
-app.MapPost("/update", async (HttpContext x) =>
+app.MapGet("/update", async (HttpContext x) =>
 {
     var task = provider.GetRequiredService<UpdateTask>();
 

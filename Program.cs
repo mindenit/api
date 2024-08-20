@@ -59,6 +59,8 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("https://www.gnu.org/licenses/gpl-3.0.uk.html")
         }
     });
+    // Приховування шляхів, що містять певний шаблон, наприклад "/update"
+    options.DocInclusionPredicate((_, api) => !api.RelativePath.Contains("update"));
 });
 
 using (var context = new Context())

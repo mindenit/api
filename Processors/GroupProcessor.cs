@@ -67,7 +67,7 @@ namespace Api.Processors
                         List<Event> events = new List<Event>();
                         events = Cist.GetEvents(EventType.Group, group.Id);
                         group.Events = JsonSerializer.Serialize(events);
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                     }
                 }
                 catch (Exception e)

@@ -65,7 +65,7 @@ namespace Api.Processors
                     foreach (var teacher in context.Teachers)
                     {
                         teacher.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Teacher, teacher.Id));
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                     }
                 }
                 catch (Exception e)

@@ -42,21 +42,25 @@ namespace Api.Handlers
         {
             using (var context = new Context())
             {
-                var groups = Cist.GetGroups();
-                List<ScheduleGroup> scheduleGroups = new List<ScheduleGroup>();
-                scheduleGroups = ScheduleGroup.Convert(groups);
-                
-                if(context.Groups.ToList().Count != scheduleGroups.Count)
+                try
                 {
-                    foreach (var group in scheduleGroups)
+                    var groups = Cist.GetGroups();
+                    List<ScheduleGroup> scheduleGroups = new List<ScheduleGroup>();
+                    scheduleGroups = ScheduleGroup.Convert(groups);
+                    
+                    if(context.Groups.ToList().Count != scheduleGroups.Count)
                     {
-                        if (!context.Groups.Any(t => t.Id == group.Id))
+                        foreach (var group in scheduleGroups)
                         {
-                            context.Groups.Add(group);
+                            if (!context.Groups.Any(t => t.Id == group.Id))
+                            {
+                                context.Groups.Add(group);
+                            }
                         }
+                        context.SaveChanges();
                     }
-                    context.SaveChanges();
                 }
+                catch{}
             }
         }
 

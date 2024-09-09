@@ -40,21 +40,25 @@ namespace Api.Handlers
         {
             using (var context = new Context())
             {
-                var auditories = Cist.GetAuditories();
-                List<ScheduleAuditory> scheduleAuditories = new List<ScheduleAuditory>();
-                scheduleAuditories = ScheduleAuditory.Convert(auditories);
-                
-                if(context.Auditories.ToList().Count != scheduleAuditories.Count)
+                try
                 {
-                    foreach (var auditory in scheduleAuditories)
+                    var auditories = Cist.GetAuditories();
+                    List<ScheduleAuditory> scheduleAuditories = new List<ScheduleAuditory>();
+                    scheduleAuditories = ScheduleAuditory.Convert(auditories);
+                    
+                    if(context.Auditories.ToList().Count != scheduleAuditories.Count)
                     {
-                        if (!context.Auditories.Any(t => t.Id == auditory.Id))
+                        foreach (var auditory in scheduleAuditories)
                         {
-                            context.Auditories.Add(auditory);
+                            if (!context.Auditories.Any(t => t.Id == auditory.Id))
+                            {
+                                context.Auditories.Add(auditory);
+                            }
                         }
+                        context.SaveChanges();
                     }
-                    context.SaveChanges();
                 }
+                catch{}
             }
         }
 

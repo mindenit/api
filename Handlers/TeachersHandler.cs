@@ -40,21 +40,25 @@ namespace Api.Handlers
         {
             using (var context = new Context())
             {
-                var teachers = Cist.GetTeachers();
-                List<ScheduleTeacher> scheduleTeachers = new List<ScheduleTeacher>();
-                scheduleTeachers = ScheduleTeacher.Convert(teachers);
-                
-                if(context.Teachers.ToList().Count != scheduleTeachers.Count)
+                try
                 {
-                    foreach (var teacher in scheduleTeachers)
+                    var teachers = Cist.GetTeachers();
+                    List<ScheduleTeacher> scheduleTeachers = new List<ScheduleTeacher>();
+                    scheduleTeachers = ScheduleTeacher.Convert(teachers);
+                    
+                    if(context.Teachers.ToList().Count != scheduleTeachers.Count)
                     {
-                        if (!context.Teachers.Any(t => t.Id == teacher.Id))
+                        foreach (var teacher in scheduleTeachers)
                         {
-                            context.Teachers.Add(teacher);
+                            if (!context.Teachers.Any(t => t.Id == teacher.Id))
+                            {
+                                context.Teachers.Add(teacher);
+                            }
                         }
+                        context.SaveChanges();
                     }
-                    context.SaveChanges();
                 }
+                catch{}
             }
         }
         

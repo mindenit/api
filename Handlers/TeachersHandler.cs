@@ -3,6 +3,8 @@ using Api.Contexts;
 using Nure.NET;
 using Nure.NET.Types;
 using System.Text.Json;
+using Discord.Webhook;
+
 
 namespace Api.Handlers
 {
@@ -36,7 +38,7 @@ namespace Api.Handlers
             }
         }
 
-        public static void Update()
+        public static async Task Update()
         {
             using (var context = new Context())
             {
@@ -58,7 +60,11 @@ namespace Api.Handlers
                         context.SaveChanges();
                     }
                 }
-                catch{}
+                catch (Exception e)
+                {
+                    var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                    await client.SendMessageAsync("Error while updating information: \n> " + e.Message + "\n" + "> " + e.StackTrace);
+                }
             }
         }
         

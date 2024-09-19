@@ -4,6 +4,8 @@ using Nure.NET;
 using Nure.NET.Types;
 using Serilog;
 using System.Text.Json;
+using Discord.Webhook;
+
 
 namespace Api.Processors
 {
@@ -11,7 +13,8 @@ namespace Api.Processors
     {
         public static string GetJson(long id, long start = 0, long end = 0)
         {
-            return JsonSerializer.Serialize(Get(EventType.Auditory, id, start, end), new JsonSerializerOptions { 
+            return JsonSerializer.Serialize(Get(EventType.Auditory, id, start, end), new JsonSerializerOptions
+            {
                 WriteIndented = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
@@ -56,7 +59,7 @@ namespace Api.Processors
             return new List<Event>();
         }
 
-        public static void Update()
+        public static async Task Update()
         {
             using (var context = new Context())
             {
@@ -64,13 +67,27 @@ namespace Api.Processors
                 {
                     foreach (var auditory in context.Auditories)
                     {
-                        auditory.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Auditory, auditory.Id));
-                        Thread.Sleep(1000);
+                        try
+                        {
+                            List<Event> events = new List<Event>();
+                            events = Cist.GetEvents(EventType.Auditory, auditory.Id);
+                            auditory.Events = JsonSerializer.Serialize(events);
+                            Thread.Sleep(1000);
+                        }
+                        catch (Exception e)
+                        {
+                            var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                            await client.SendMessageAsync($"Error while updating information: \n > {e.Message} \n Stack \n > {e.StackTrace}"
+                                                            + $"\n > Additional information:"
+                                                            + $"\n > Auditory ID: {auditory.Id}"
+                                                            + $"\n > Auditory: {auditory.Name}");
+                        }
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Error updating auditories");
+                    var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                    await client.SendMessageAsync("Error while updating information: \n> " + e.Message + "\n" + "> " + e.StackTrace);
                 }
                 context.SaveChanges();
             }

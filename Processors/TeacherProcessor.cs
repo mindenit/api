@@ -4,6 +4,7 @@ using Nure.NET;
 using Nure.NET.Types;
 using Serilog;
 using System.Text.Json;
+using Discord.Webhook;
 
 namespace Api.Processors
 {
@@ -56,7 +57,7 @@ namespace Api.Processors
             return new List<Event>();            
         }
 
-        public static void Update()
+        public static async Task Update()
         {
             using (var context = new Context())
             {
@@ -64,8 +65,20 @@ namespace Api.Processors
                 {
                     foreach (var teacher in context.Teachers)
                     {
-                        teacher.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Teacher, teacher.Id));
-                        Thread.Sleep(1000);
+                        try
+                        {
+                            teacher.Events = JsonSerializer.Serialize(Cist.GetEvents(EventType.Teacher, teacher.Id));
+                            Thread.Sleep(1000);
+                        }
+                        catch (Exception e)
+                        {
+                            var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                            await client.SendMessageAsync($"Error while updating information: \n > {e.Message} \n Stack \n > {e.StackTrace}"
+                                                            + $"\n > Additional information:"
+                                                            + $"\n > Teacher ID: {teacher.Id}"
+                                                            + $"\n > Teacher: {teacher.FullName}");
+                        }
+
                     }
                 }
                 catch (Exception e)

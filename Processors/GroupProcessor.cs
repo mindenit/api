@@ -4,6 +4,7 @@ using Nure.NET;
 using Nure.NET.Types;
 using Serilog;
 using System.Text.Json;
+using Discord.Webhook;
 
 namespace Api.Processors
 {
@@ -56,7 +57,7 @@ namespace Api.Processors
             return new List<Event>();            
         }
 
-        public static void Update()
+        public static async Task Update()
         {
             using (var context = new Context())
             {
@@ -64,15 +65,27 @@ namespace Api.Processors
                 {
                     foreach (var group in context.Groups)
                     {
-                        List<Event> events = new List<Event>();
-                        events = Cist.GetEvents(EventType.Group, group.Id);
-                        group.Events = JsonSerializer.Serialize(events);
-                        Thread.Sleep(1000);
+                        try
+                        {
+                            List<Event> events = new List<Event>();
+                            events = Cist.GetEvents(EventType.Group, group.Id);
+                            group.Events = JsonSerializer.Serialize(events);
+                            Thread.Sleep(1000);
+                        }
+                        catch (Exception e)
+                        {
+                            var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                            await client.SendMessageAsync($"Error while updating information: \n > {e.Message} \n Stack \n > {e.StackTrace}"
+                                                            + $"\n > Additional information:"
+                                                            + $"\n > Group ID: {group.Id}"
+                                                            + $"\n > Group: {group.Name}");
+                        }
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Error while updating groups");
+                    var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
+                    await client.SendMessageAsync("Error while updating information: \n> " + e.Message + "\n" + "> " + e.StackTrace);
                 }
                 context.SaveChanges();
             }

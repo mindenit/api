@@ -28,9 +28,9 @@ namespace Api.Tasks
 
             try
             {
-                GroupsHandler.Update();
-                TeachersHandler.Update();
-                AuditoriesHandler.Update();
+                await GroupsHandler.Update();
+                await TeachersHandler.Update();
+                await AuditoriesHandler.Update();
 
                 AuditoryProcessor.Update();
                 GroupProcessor.Update();
@@ -39,7 +39,7 @@ namespace Api.Tasks
             catch (Exception e)
             {
                 var client = new DiscordWebhookClient(Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL"));
-                await client.SendMessageAsync("Error while updating information: >" + e.Message);
+                await client.SendMessageAsync("Error while updating information: \n> " + e.Message);
                 Log.Error(e, "Error while updating information");
             }
 

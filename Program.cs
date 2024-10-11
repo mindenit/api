@@ -8,6 +8,8 @@ using Api.Processors;
 using Api.Tasks;
 using Nure.NET.Types;
 using Discord.Webhook;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 var allowAny = "_any";
@@ -62,6 +64,18 @@ builder.Services.AddSwaggerGen(options =>
     // Приховування шляхів, що містять певний шаблон, наприклад "/update"
     options.DocInclusionPredicate((_, api) => !api.RelativePath.Contains("update"));
 });
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("MyRateLimiter", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 5; // Максимум 5 запитів
+        limiterOptions.Window = TimeSpan.FromSeconds(15); // Протягом 10 секунд
+        limiterOptions.QueueLimit = 5; // Дозволити ще 2 запити у черзі, якщо ліміт перевищено
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst; // Обробка запитів з черги в порядку їх надходження
+    });
+});
+
 
 using (var context = new Context())
 {

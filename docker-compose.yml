@@ -19,7 +19,7 @@ services:
       - dev
 
   api:
-    image: api
+    image: ghcr.io/mindenit/api:main
     restart: always
     environment:
       - ASPNETCORE_HTTP_PORTS=5035

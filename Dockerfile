@@ -1,5 +1,5 @@
 ﻿
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 RUN     apt-get  update -y \
 && apt-get upgrade -y \
 && apt-get install iputils-ping -y \
@@ -8,7 +8,7 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 5035
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["api.csproj", "./"]

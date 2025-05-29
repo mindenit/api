@@ -1,5 +1,5 @@
 ﻿
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
 RUN     apt-get  update -y \
 && apt-get upgrade -y \
 && apt-get install iputils-ping -y \
